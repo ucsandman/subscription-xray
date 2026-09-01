@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subscription X-Ray — find every recurring charge in your bank statement</title>
+<meta name="description" content="Drop in a bank CSV and see every recurring charge, price rise and forgotten subscription. Runs entirely in your browser: the file is never uploaded.">
+<link rel="stylesheet" href="./styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🩻</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">Subscription X-Ray</span>
+  </div>
+  <p class="privacy" title="The page makes no network requests after it loads. Its content security policy blocks them outright.">
+    <span class="dot" aria-hidden="true"></span> Your file never leaves this browser
+  </p>
+</header>
+
+<main id="main">
+
+  <!-- Empty state: the product IS the first screen. -->
+  <section id="intake" class="intake">
+    <h1>See every recurring charge hiding in your statement.</h1>
+    <p class="sub">
+      Export the last year or two from your bank as CSV and drop it below. You get every
+      subscription, every price rise, and what it all costs you a year — then you decide what stays.
+    </p>
+
+    <div id="dropzone" class="dropzone" tabindex="0" role="button"
+         aria-label="Choose a CSV file, or drop one here">
+      <input type="file" id="file" accept=".csv,text/csv,text/plain" hidden>
+      <svg class="dz-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 16V4m0 0L7 9m5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2" fill="none" stroke="currentColor"
+              stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <p class="dz-main">Drop your CSV here <span>or click to choose a file</span></p>
+      <p class="dz-hint">Nothing is uploaded. The analysis runs on this device.</p>
+    </div>
+
+    <p class="try">
+      No statement handy? <button type="button" id="load-sample" class="linkish">Try it with a sample statement</button>
+    </p>
+
+    <ol class="how">
+      <li><strong>It reads the mess.</strong> Processor prefixes, store numbers and city tails all collapse to one merchant.</li>
+      <li><strong>It separates habits from subscriptions.</strong> A weekly coffee repeats too — regular timing is what makes a charge a bill.</li>
+      <li><strong>You make the call.</strong> Every figure traces back to a charge in your file. Nothing is guessed on your behalf.</li>
+    </ol>
+  </section>
+
+  <section id="error" class="error" hidden>
+    <p id="error-text"></p>
+    <button type="button" class="btn" id="error-back">Try another file</button>
+  </section>
+
+  <!-- Results: the working surface. -->
+  <section id="results" hidden>
+
+    <div id="notice" class="notice" hidden>
+      <span id="notice-text"></span>
+      <button type="button" class="btn btn-quiet" id="flip-dates">Read them the other way</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">Active subscriptions</span>
+        <span class="stat-value" id="stat-count">—</span>
+        <span class="stat-note" id="stat-count-note"></span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Committed spend</span>
+        <span class="stat-value" id="stat-monthly">—</span>
+        <span class="stat-note">per month</span>
+      </div>
+      <div class="stat stat-hero">
+        <span class="stat-label">That&rsquo;s a year of</span>
+        <span class="stat-value" id="stat-annual">—</span>
+        <span class="stat-note" id="stat-annual-note"></span>
+      </div>
+      <div class="stat stat-save">
+        <span class="stat-label">Marked to cancel</span>
+        <span class="stat-value" id="stat-savings">$0.00</span>
+        <span class="stat-note">saved per year</span>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="filters">
+        <label class="field">
+          <span>Category</span>
+          <select id="filter-category"><option value="">All</option></select>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" id="filter-ended" checked>
+          <span>Show stopped</span>
+        </label>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" id="export-md">Download action plan</button>
+        <button type="button" class="btn" id="export-csv">Export CSV</button>
+        <button type="button" class="btn btn-quiet" id="reset">Start over</button>
+      </div>
+    </div>
+
+    <ul id="list" class="list"></ul>
+
+    <p class="footnote" id="footnote"></p>
+  </section>
+</main>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

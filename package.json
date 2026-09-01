@@ -1,0 +1,15 @@
+{
+  "name": "subscription-xray",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Drop in a bank CSV and see every recurring charge, price rise and forgotten subscription. Runs entirely in the browser.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node scripts/dev.mjs",
+    "test": "node --test",
+    "sample": "node scripts/make-sample.mjs"
+  }
+}
