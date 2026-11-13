@@ -83,6 +83,9 @@ function iso(d) {
 }
 
 function escapeCell(value) {
-  const s = String(value);
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  let s = String(value);
+  // CSV quoting alone does not stop spreadsheet formula evaluation. Keep
+  // imported text literal, including formulas hidden behind whitespace.
+  if (/^\s*[=+@-]|^[\t\r\n]/.test(s)) s = "'" + s;
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }

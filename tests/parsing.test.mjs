@@ -123,3 +123,22 @@ test('normalizeTransactions: refuses a file it cannot read rather than inventing
   assert.equal(result.ok, false);
   assert.match(result.error, /date|amount|transactions/i);
 });
+
+test('parseDate: rejects calendar rollover instead of inventing transaction dates', () => {
+  for (const raw of ['2026-02-29', '2024-02-30', '2026-04-31', '31/04/2026', '29 Feb 2026', 'Apr 31, 2026']) {
+    assert.equal(parseDate(raw), null, raw);
+  }
+  assert.equal(parseDate('2024-02-29').toISOString(), '2024-02-29T00:00:00.000Z');
+  assert.equal(parseDate('2026-04-30').toISOString(), '2026-04-30T00:00:00.000Z');
+});
+
+test('normalization counts impossible dates as skipped evidence', () => {
+  const result = normalizeTransactions([
+    ['Date', 'Description', 'Amount'],
+    ['2026-02-30', 'ACME', '-10'],
+    ['2026-03-01', 'ACME', '-10'],
+  ]);
+  assert.equal(result.ok, true);
+  assert.equal(result.skipped, 1);
+  assert.equal(result.transactions.length, 1);
+});

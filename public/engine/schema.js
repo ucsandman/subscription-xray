@@ -102,7 +102,9 @@ function year(y) {
 function utc(y, mo, d) {
   if (!y || !mo || !d || mo < 1 || mo > 12 || d < 1 || d > 31) return null;
   const dt = new Date(Date.UTC(y, mo - 1, d));
-  return Number.isNaN(dt.getTime()) ? null : dt;
+  // Date.UTC rolls February 30 into March; that would invent evidence.
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === mo - 1 && dt.getUTCDate() === d
+    ? dt : null;
 }
 
 /**

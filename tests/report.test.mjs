@@ -63,3 +63,27 @@ test('the CSV export carries the decision and the evidence for it', () => {
   assert.equal(cells[7], '2025-07-17');
   assert.equal(cells[8], '2026-06-17');
 });
+
+test('CSV export neutralizes formula prefixes in untrusted text', () => {
+  for (const value of ['=1+1', '+1+1', '-1+1', '@SUM(A1)', '  =1+1', '\t=1+1', '\r=1+1', '\n=1+1']) {
+    const result = analyzed();
+    const s = result.series[0];
+    s.name = value;
+    s.category = value;
+    s.cadenceLabel = value;
+    s.flags = [{ id: value }];
+    const line = toCsv(result, { [s.key]: value });
+    const expected = "'" + value;
+    const escaped = /[",\r\n]/.test(expected) ? '"' + expected.replace(/"/g, '""') + '"' : expected;
+    assert.ok(line.includes(escaped + ',' + escaped + ',' + escaped + ','), JSON.stringify(value));
+    assert.ok(line.includes(',' + escaped + '\n'), 'flags must also be protected');
+  }
+});
+
+test('CSV export quotes carriage returns and preserves ordinary numeric cells', () => {
+  const result = analyzed();
+  result.series[0].name = 'ACME\rBilling';
+  const csv = toCsv(result);
+  assert.ok(csv.includes('"ACME\rBilling",'));
+  assert.ok(csv.includes(',17.99,Monthly,215.88,'));
+});
